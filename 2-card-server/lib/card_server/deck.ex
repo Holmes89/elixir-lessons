@@ -1,4 +1,4 @@
-defmodule Deck do
+defmodule CardServer.Deck do
 
   @moduledoc """
     Standard card Deck

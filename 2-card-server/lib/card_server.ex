@@ -1,18 +1,24 @@
 defmodule CardServer do
-  @moduledoc """
-  Documentation for CardServer.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  alias CardServer.{Producer, Consumer}
 
-  ## Examples
+  def start(_type, _args) do
+  import Supervisor.Spec, warn: false
 
-      iex> CardServer.hello
-      :world
+  children = [
+    worker(Producer, [0]),
+    worker(Consumer, [], id: 1),
+    worker(Consumer, [], id: 2)
+  ]
 
-  """
-  def hello do
-    :world
+  opts = [strategy: :one_for_one, name: CardServer.Supervisor]
+  Supervisor.start_link(children, opts)
+end
+
+  def notify_producer do
+    send(Producer, :data_inserted)
   end
+
+  defdelegate enqueue(module, function, args), to: Producer
 end
